@@ -1,1 +1,0 @@
-# e-commerce-sales-insight-sql
