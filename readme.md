@@ -1,6 +1,24 @@
 # 🏥 US Healthcare SQL Analytics Project
 
-A complete end-to-end healthcare analytics project using **PostgreSQL**, **pgAdmin**, and **Python** to extract actionable insights from claims and patient data.
+A complete end-to-end healthcare analytics solution using **PostgreSQL**, **pgAdmin**, and **Python** to uncover business insights from patient and claims data.
+
+This project focuses on solving **20 real-time KPIs** across cost, coverage, delay patterns, physician performance, and patient demographics — driven by SQL automation and visual outputs.
+
+---
+
+## 🔧 Tech Stack & Tools
+
+| Category         | Tools / Libraries                             | Purpose                                                                 |
+|------------------|-----------------------------------------------|-------------------------------------------------------------------------|
+| 🛢️ Database       | PostgreSQL                                     | Core relational database for storing healthcare data                   |
+| 🧰 SQL Tool       | pgAdmin 4                                      | GUI for SQL execution, schema design, and data inspection              |
+| 🐍 Programming    | Python (`pandas`, `psycopg2`)                  | Data cleaning, PostgreSQL connection, and CSV automation               |
+| 📓 Notebooks      | Jupyter Notebook                               | Data preprocessing and KPI automation in interactive format            |
+| 📄 Query Language | SQL                                            | Core logic for solving all 20 business KPIs                            |
+| 📈 Visualization  | ERD with `dbdiagram.io`                        | Entity relationship mapping of fact/dimension healthcare schema        |
+
+---
+
 
 ---
 
@@ -10,88 +28,109 @@ A complete end-to-end healthcare analytics project using **PostgreSQL**, **pgAdm
   <summary>📁 <strong>us_healthcare_sql_analysis/</strong> – Click to expand</summary>
 
 📂 data/  
-├── 📄 datasets/ – Raw CSV files  
-├── 📄 outputs/ – Cleaned data using pandas  
+├── 📄 datasets/ — Raw healthcare CSV files  
+├── 📄 outputs/ — Cleaned data after preprocessing  
 
 📂 database/  
-├── 📜 Defining_Tables.sql – PostgreSQL table schema  
-├── 🐍 Load_Data_Scripts.py – Bulk load via psycopg2  
+├── 📜 Defining_Tables.sql — SQL schema with constraints and relationships  
+├── 🐍 Load_Data_Scripts.py — Bulk PostgreSQL loader using psycopg2  
 
 📂 notebooks/  
-├── 📓 1_data_cleaning.ipynb – Clean and export CSVs  
-├── 📓 2_eda_analysis.ipynb – Nulls, value distribution  
-├── 📓 3_sql_query_runner.ipynb – Run SQL and export results  
+├── 📓 1_data_cleaning.ipynb — Clean and export raw CSVs  
+├── 📓 2_eda_analysis.ipynb — Null checks and data exploration  
+├── 📓 3_sql_query_runner.ipynb — Dynamic SQL execution and result export  
 
 📂 business_problems_outcomes/  
-├── 🧠 01_top_cpt_costs.sql  
-├── 🧠 02_avg_insurance_coverage.sql  
-├── … (20 KPI queries)  
-├── 📄 result_01_top_cpt_costs.csv – pgAdmin query outputs  
+├── 🧠 01_top_cpt_costs.sql — KPI SQL queries (20 total)  
+├── 📄 result_01_top_cpt_costs.csv — Results via pgAdmin  
 
 📂 outputs/  
-├── 📄 csvs/ – Python-executed SQL output files  
+├── 📄 csvs/ — SQL outputs via Python automation  
 
 📂 diagrams/  
-├── 🖼️ ERD_Health_Analytics.png – ER diagram  
+├── 🖼️ ERD_Health_Analytics.png — Entity-Relationship Diagram  
 
-📘 README.md – This file  
+📘 README.md — Project documentation  
 </details>
 
 ---
 
-## 🧰 Tools & Technologies Used
+## 🧩 Entity Relationship Diagram (ERD)
 
-| Tool           | Purpose                             |
-|----------------|-------------------------------------|
-| PostgreSQL     | Backend relational database         |
-| pgAdmin 4      | SQL execution & schema inspection   |
-| Python (pandas)| Cleaning raw data and automation    |
-| Jupyter        | EDA and automation notebooks        |
-| SQL            | Core logic to extract insights      |
+This ERD illustrates the **star schema** used to model healthcare claims and billing data in PostgreSQL. The central `facttable` connects to multiple dimension tables, enabling efficient joins and analytical flexibility for KPI computation.
+
+### 🗃️ Fact Table
+
+- **`facttable`** — Core transactional table containing:
+  - Foreign keys to all dimension tables (e.g., `dimPatientPK`, `dimDateServicePK`, `dimCPTCodePK`)
+  - Medical and billing fields like `CPTUnits`, `Gross_Expenses`, `Insurance_Payment`, `Patient_Payment`, `Adjustment`, `AR`
+
+### 🧩 Dimension Tables
+
+- **`dimpatient`** — Patient-level details (name, gender, age, state, region)
+- **`dimpayer`** — Insurance provider information
+- **`dimphysician`** — Physician metadata (NPI, name, specialty, FTE)
+- **`dimspeciality`** — Specialization types with descriptive fields
+- **`dimdate`** — Date reference with breakdowns by year, month, weekday
+- **`dimtransaction`** — Claim transaction types and adjustment reasons
+- **`dimcptcode`** — CPT codes, descriptions, and groupings for procedure classification
+- **`dimdiagnosiscode`** — Diagnosis codes with grouping and descriptions
+- **`dimhospital`** — Hospital or location data (`LocationName`)
+
+> 🧠 This schema supports comprehensive healthcare analytics across cost, insurance coverage, readmissions, provider efficiency, and more — by enabling multi-dimensional aggregations.
+
+📌 ERD created using: [dbdiagram.io](https://dbdiagram.io)  
+📷 Schema diagram below:
+
+![ERD Diagram](diagrams/ERD_Health_Analytics.png)
 
 ---
 
-## 🧼 Step 1: Data Cleaning (`1_data_cleaning.ipynb`)
+
+## 📊 Development Lifecycle
+
+This project follows a 5-step data-to-insight pipeline — from raw CSV cleaning to SQL-powered business KPIs and dynamic exports via Python.
+
+---
+
+### 🧼 Step 1: Data Cleaning (`1_data_cleaning.ipynb`)
 
 - Loaded all raw `.csv` files from `data/datasets/`
-- Standardized column names (underscores)
-- Filled missing values with `"NA"`
-- Fixed bad dates (e.g., `16-12-2019`) and numeric errors (`#NUM!`)
-- Saved cleaned files to `data/outputs/`
+- Standardized column names to use underscores
+- Replaced null values with `"NA"`
+- Corrected invalid dates (e.g., `16-12-2019`) and numeric anomalies (`#NUM!`)
+- Saved cleaned outputs to `data/outputs/`
 
 ---
 
-## 📊 Step 2: Exploratory Analysis (`2_eda_analysis.ipynb`)
+### 📊 Step 2: Exploratory Data Analysis (`2_eda_analysis.ipynb`)
 
-- Null value summary
-- Unique count checks for ID columns
-- Gender, state, and payer distribution plots
-- Verified foreign key relations across tables
-
----
-
-## 🗃️ Step 3: PostgreSQL Database Setup
-
-- **File:** `database/Defining_Tables.sql`  
-  Created tables with constraints and relations between fact and dimension tables.
-
-- **File:** `database/Load_Data_Scripts.py`  
-  Loaded cleaned `.csv` files into PostgreSQL using `psycopg2` with status logging.
+- Summary of missing/null values
+- Unique ID validations and data integrity checks
+- Distribution plots for gender, states, payers
+- Verified foreign key relationships across all entities
 
 ---
 
-## 🧠 Step 4: Business Problem KPIs
+### 🗃️ Step 3: PostgreSQL Schema & Data Loading
 
-20 real-time healthcare business KPIs have been solved using SQL and stored inside:
+- **Schema Setup:** [`Defining_Tables.sql`](database/Defining_Tables.sql)  
+  Defined relational schema with constraints and normalized tables.
 
-- `business_problems_outcomes/` → SQL query files  
-- `business_problems_outcomes/` → Results via **pgAdmin**
-- `outputs/csvs/` → Results via **Python notebook**
+- **Data Load:** [`Load_Data_Scripts.py`](database/Load_Data_Scripts.py)  
+  Automatically loads cleaned `.csv` files into PostgreSQL using `psycopg2` with status logging.
+
+---
+
+### 🧠 Step 4: Solving 20 Business KPIs
+
+We created 20 SQL-based KPIs to answer key healthcare business questions — ranging from cost efficiency to insurance coverage and claim delays.
 
 Each KPI includes:
-- Clear objective
-- SQL logic
-- Output CSV from both sources
+
+- 🎯 Objective  
+- 🧾 SQL query file  
+- 📁 Output CSV via **pgAdmin** and **Python**
 
 | KPI No. | KPI Title                                      | Objective                                                                 | SQL Query File                                                                                  | CSV via pgAdmin                                                                                      | CSV via Python                                                                                     |
 |--------:|------------------------------------------------|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
@@ -129,28 +168,6 @@ Notebook: [`3_sql_query_runner.ipynb`](notebooks/3_sql_query_runner.ipynb)
 
 ---
 
-## 🔗 Entity Relationship Diagram
-
-- **Fact table**: `facttable`
-- **Linked dimensions**: `dimpatient`, `dimpayer`, `dimphysician`, `dimdate`, etc.
-- Built using [dbdiagram.io](https://dbdiagram.io) > *ERD Tool*
-
-![ERD Diagram](diagrams/ERD_Health_Analytics.png)
-
----
-
-## 📬 Summary
-
-This project demonstrates **end-to-end healthcare analytics** using:
-
-- ✅ PostgreSQL schema with relationships and indexing
-- ✅ SQL queries solving real-world business KPIs
-- ✅ Python (`psycopg2`, `pandas`) for query automation
-- ✅ Jupyter notebooks for data cleaning and exploration
-- ✅ Full insight generation across cost, coverage, efficiency, and delays
-
----
-
 ## 🚀 Run It Yourself
 
 1. **Load Data to PostgreSQL**  
@@ -165,6 +182,22 @@ This project demonstrates **end-to-end healthcare analytics** using:
    Output `.csv` files are saved in:
    - `business_problems_outcomes/` → via **pgAdmin**
    - `outputs/csvs/` → via **Python script**
+
+---
+
+## 📬 Project Summary & Conclusion
+
+This project delivers a complete **healthcare analytics solution** powered by PostgreSQL, SQL, and Python — designed to transform raw claim data into actionable business insights.
+
+It demonstrates:
+
+- ✅ A fully normalized **PostgreSQL schema** supporting analytical joins and aggregations
+- ✅ **20 real-world KPIs** solved using SQL — targeting cost trends, insurance coverage, payer behavior, readmissions, and provider performance
+- ✅ Python-based **automation scripts** using `psycopg2` to run SQL queries and export results dynamically
+- ✅ Clean and modular **Jupyter notebooks** for data cleaning, EDA, and SQL execution
+- ✅ A reusable framework for generating **insights across multiple healthcare dimensions**
+
+> 🚀 This end-to-end system reflects practical data engineering, query optimization, and healthcare domain application — making it both interview-ready and production-scalable.
 
 ---
 
